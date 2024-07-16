@@ -3,13 +3,11 @@ version: 1.4
 name: Phoronix Performance Test
 logo: http://www.phoronix-test-suite.com/img/ptsLogo.png
 homepage: http://www.phoronix-test-suite.com/
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/phoronix/main
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/phoronix/master
 description: Open-Source, Automated Benchmarking
 skipNodeEmails: true
 
 globals:
-    iteration:  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-    timeout:    150000
     vPhoronix:  10.4.0
     vCray:      1.1.1
     vRamspeed:  1.4.3
@@ -33,10 +31,7 @@ onInstall:
 actions:
   installPhoronix:
     cmd [docker]: |-
-      #mkdir -p /pts
-      #yum install --quiet -y autoconf automake bc bzip2 curl epel-release expat-devel gcc gcc-c++ glibc-static jq jsoup libaio-devel make patch php-cli php-xml unzip
-      #curl --silent --retry-delay 10 --retry 3 -k https://phoronix-test-suite.com/releases/phoronix-test-suite-${globals.vPhoronix}.tar.gz | tar -xz --strip-components=1 -C /pts
-      apt install -y jq bc
+      apt -y -q install jq bc
       ln -s /phoronix-test-suite /pts
       curl --silent --retry-delay 10 --retry 3 --output /usr/local/bin/pts-result.sh ${baseUrl}/script/pts-result.sh
       chmod +x /usr/local/bin/pts-result.sh

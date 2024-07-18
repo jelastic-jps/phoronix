@@ -46,9 +46,20 @@ onInstall:
     envName: ${settings.envName}
     region: ${settings.region}
     settings: ${settings.toJSON()}
-  - set:
-      successText: ${response.successText}
+  - setGlobals:
+      started: ${response.data.started}
+      region: ${response.data.region}
+      domain: ${response.data.domain}
+      cpu: ${response.data.cpu}
+      cpu_rate: ${response.data.cpu_rate}
+      ram: ${response.data.ram}
+      ram_rate: ${response.data.ram_rate}
+      hdd: ${response.data.hdd}
+      hdd_rate: ${response.data.hdd_rate}
+      rate: ${response.data.rate}
   - if ( ${settings.deleteEnv} ): deletePhoronix
+  - set:
+      successText: text/success.md
   - return:
       type: success
       message: ${this.successText}

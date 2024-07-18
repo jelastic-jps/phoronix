@@ -27,17 +27,31 @@ onInstall:
   - if ( ${settings.disk} ): runDiskTest
   - getResult
   - stopPhoronix
+  - return:
+      type: success
+      message: Phoronix Test Finished
+      data:
+        started: ${globals.date}
+        region: ${env.region}
+        domain: ${env.domain}
+        cpu: ${globals.cpu}
+        cpu_rate: ${globals.cpu_rate}
+        ram: ${globals.ram}
+        ram_rate: ${globals.ram_rate}
+        hdd: ${globals.hdd}
+        hdd_rate: ${globals.hdd_rate}
+        rate: ${globals.rate}
 
 actions:
   installPhoronix:
     cmd [docker]: |-
-      apt -y -q install jq bc
+      DEBIAN_FRONTEND=noninteractive apt-get -y -qq install jq bc >/dev/null
       ln -s /phoronix-test-suite /pts
       curl --silent --retry-delay 10 --retry 3 --output /usr/local/bin/pts-result.sh ${baseUrl}/script/pts-result.sh
       chmod +x /usr/local/bin/pts-result.sh
-      /pts/phoronix-test-suite install pts/ramspeed-${globals.vRamspeed} >/var/log/install_ramspeed.log
-      /pts/phoronix-test-suite install pts/fio-${globals.vFio} >/var/log/install_fio.log
-      /pts/phoronix-test-suite install pts/c-ray-${globals.vCray} >/var/log/install_cray.log
+      DEBIAN_FRONTEND=noninteractive /pts/phoronix-test-suite install pts/ramspeed-${globals.vRamspeed} >/var/log/install_ramspeed.log
+      DEBIAN_FRONTEND=noninteractive /pts/phoronix-test-suite install pts/fio-${globals.vFio} >/var/log/install_fio.log
+      DEBIAN_FRONTEND=noninteractive /pts/phoronix-test-suite install pts/c-ray-${globals.vCray} >/var/log/install_cray.log
   setupPhoronix:
     cmd [docker]: |-
       echo -e "y\nn\nn\nn\nn\ny\nn\n" | /pts/phoronix-test-suite batch-setup >/dev/null
@@ -83,18 +97,6 @@ actions:
     - log:
          RESULTS [ ${env.region} ] CPU - ${globals.cpu} (${globals.cpu_rate});  RAM - ${globals.ram} (${globals.ram_rate}); DISK - ${globals.disk} (${globals.hdd_rate}); RATE - ${globals.rate}
 
-
   stopPhoronix:
     - jelastic.environment.control.StopEnv:
         appid: ${env.appid}
-
-success: |
-     ### Phoronix Test Finished
-     **Started** ${globals.date}
-     **Region** ${env.region}
-     **Domain** ${env.domain}
-
-     * CPU ${globals.cpu} sec  ( RATE: ${globals.cpu_rate} )
-     * RAM ${globals.ram} MB/sec ( RATE: ${globals.ram_rate} )
-     * Disk ${globals.hdd} MB/sec ( RATE: ${globals.hdd_rate} )
-     * TOTAL RATE: ${globals.rate}

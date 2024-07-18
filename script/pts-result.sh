@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ##
-## https://jelastic.cloud/evaluation-criteria
+## https://www.virtuozzo.com/application-platform-partners/evaluation-criteria/
 ##
 
 cpu_raiting=(155 122 93)
@@ -26,8 +26,10 @@ function get_cpu_rate {
         echo 3
     elif [[ $cpu_result -gt ${cpu_raiting[2]} ]]; then
         echo 4
-    else
+    elif [[ $cpu_result -gt 0 ]]; then
         echo 5
+    else
+        echo 0
     fi
 }
 
@@ -44,7 +46,9 @@ function get_ram_result {
 function get_ram_rate {
     ram_result=$(echo `get_ram_result` / 1 | bc)
 
-    if [[ $ram_result -lt ${ram_raiting[0]} ]]; then
+    if [[ $ram_result -eq 0 ]]; then
+        echo 0
+    elif [[ $ram_result -lt ${ram_raiting[0]} ]]; then
         echo 2
     elif [[ $ram_result -lt ${ram_raiting[1]} ]]; then
         echo 3
@@ -68,7 +72,9 @@ function get_hdd_result {
 function get_hdd_rate {
     hdd_result=$(echo `get_hdd_result` / 1 | bc)
 
-    if [[ $hdd_result -lt ${hdd_raiting[0]} ]]; then
+    if [[ $hdd_result -eq 0 ]]; then
+        echo 0
+    elif [[ $hdd_result -lt ${hdd_raiting[0]} ]]; then
         echo 2
     elif [[ $hdd_result -lt ${hdd_raiting[1]} ]]; then
         echo 3

@@ -1,9 +1,11 @@
-# Jelastic Platform Performance Benchmark
+# VAP Platform Performance Benchmark
 
 Phoronix Test Suite is an open source platform for conducting automated tests, as well as for reporting test results regarding the Platform performance.
   
-  Import the required manifest using the link from GitHub: [https://raw.githubusercontent.com/jelastic-jps/phoronix/master/manifest.jps](https://raw.githubusercontent.com/jelastic-jps/phoronix/master/manifest.jps)
+Import the required manifest using the link from GitHub:  
+[https://raw.githubusercontent.com/jelastic-jps/phoronix/master/manifest.jps](https://raw.githubusercontent.com/jelastic-jps/phoronix/master/manifest.jps)
   
+
 <p align="left"> 
 <img src="images/import.png" width="500">
 </p>

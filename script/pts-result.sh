@@ -13,12 +13,14 @@ PTS="/pts/phoronix-test-suite"
 
 function get_cpu_result {
     $PTS result-file-to-json jelastic-cray >/dev/null
-    CPU=$( jq -r ".results[].results.jelastic.value" </root/jelastic-cray.json)
-    echo $CPU | xargs printf '%.2f'
+    FILE=/root/jelastic-cray.json
+    test -s "$FILE" && \
+        CPU=$( jq -r ".results[].results.jelastic.value" <"$FILE")
+    echo "${CPU:-0}" | xargs printf '%.2f'
 }
 
 function get_cpu_rate {
-    cpu_result=$(echo `get_cpu_result` / 1 | bc)
+    cpu_result=$(echo "$(get_cpu_result)" / 1 | bc)
 
     if [[ $cpu_result -gt ${cpu_raiting[0]} ]]; then
         echo 2
@@ -38,13 +40,17 @@ function get_cpu_rate {
 function get_ram_result {
     $PTS result-file-to-json jelastic-ramspeed-integer >/dev/null
     $PTS result-file-to-json jelastic-ramspeed-float   >/dev/null
-    RAM_INT=$( jq -r ".results[].results.jelastic.value"  </root/jelastic-ramspeed-integer.json)
-    RAM_FL=$( jq -r ".results[].results.jelastic.value" </root/jelastic-ramspeed-float.json)
-    echo "( $RAM_INT + $RAM_FL ) / 2" | bc -l | xargs printf '%.2f'
+    FILE=/root/jelastic-ramspeed-integer.json
+    test -s "$FILE" && \
+        RAM_INT=$( jq -r ".results[].results.jelastic.value"  <"$FILE")
+    FILE=/root/jelastic-ramspeed-float.json
+    test -s "$FILE" && \
+        RAM_FL=$( jq -r ".results[].results.jelastic.value" <"$FILE")
+    echo "( ${RAM_INT:-0} + ${RAM_FL:-0} ) / 2" | bc -l | xargs printf '%.2f'
 }
 
 function get_ram_rate {
-    ram_result=$(echo `get_ram_result` / 1 | bc)
+    ram_result=$(echo "$(get_ram_result)" / 1 | bc)
 
     if [[ $ram_result -eq 0 ]]; then
         echo 0
@@ -64,13 +70,17 @@ function get_ram_rate {
 function get_hdd_result {
     $PTS result-file-to-json jelastic-fio-randread  >/dev/null
     $PTS result-file-to-json jelastic-fio-randwrite >/dev/null
-    HDDR=$( jq -r '.results[] | select(.scale=="MB/s") | .results.jelastic.value'  </root/jelastic-fio-randread.json)
-    HDDW=$( jq -r '.results[] | select(.scale=="MB/s") | .results.jelastic.value'  </root/jelastic-fio-randwrite.json)
-    echo "( $HDDR + $HDDW )  / 2" | bc -l | xargs printf '%.2f'
+    FILE=/root/jelastic-fio-randread.json
+    test -s  $FILE && \
+        HDDR=$( jq -r '.results[] | select(.scale=="MB/s") | .results.jelastic.value' <"$FILE")
+    FILE=/root/jelastic-fio-randwrite.json
+    test -s "$FILE" && \
+        HDDW=$( jq -r '.results[] | select(.scale=="MB/s") | .results.jelastic.value' <"$FILE")
+    echo "( ${HDDR:-0} + ${HDDW:-0} )  / 2" | bc -l | xargs printf '%.2f'
 }
 
 function get_hdd_rate {
-    hdd_result=$(echo `get_hdd_result` / 1 | bc)
+    hdd_result=$(echo "$(get_hdd_result)" / 1 | bc)
 
     if [[ $hdd_result -eq 0 ]]; then
         echo 0

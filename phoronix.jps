@@ -47,7 +47,9 @@ actions:
     cmd [docker]: |-
       DEBIAN_FRONTEND=noninteractive apt-get -y -qq install jq bc >/dev/null
       ln -s /phoronix-test-suite /pts
-      curl --silent --retry-delay 10 --retry 3 --output /usr/local/bin/pts-result.sh ${baseUrl}/script/pts-result.sh
+      mkdir -p /var/lib/phoronix-test-suite/download-cache
+      curl -ks --retry 3 --output /var/lib/phoronix-test-suite/download-cache/fio-3.36.tar.gz https://dot.jelastic.com/download/jps/phoronix/fio-3.36.tar.gz
+      curl -s --retry 3 --output /usr/local/bin/pts-result.sh ${baseUrl}/script/pts-result.sh
       chmod +x /usr/local/bin/pts-result.sh
       DEBIAN_FRONTEND=noninteractive /pts/phoronix-test-suite install pts/ramspeed-${globals.vRamspeed} >/var/log/install_ramspeed.log
       DEBIAN_FRONTEND=noninteractive /pts/phoronix-test-suite install pts/fio-${globals.vFio} >/var/log/install_fio.log
